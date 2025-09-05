@@ -1,0 +1,12 @@
+# Ignore downloads folder
+server/downloads/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
