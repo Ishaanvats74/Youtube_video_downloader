@@ -3,18 +3,18 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-
+import { Bounce, toast } from "react-toastify";
 
 const Home = () => {
   const navigate = useNavigate();
   const [link, setLink] = useState<string>("");
   const [submited, setSubmited] = useState<boolean>(false);
   const [Video_Id, setVideo_Id] = useState<string | null>("");
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
+  const firstname = user?.firstName;
   if (!isSignedIn) {
     navigate("/sign-in");
   }
-
   const Video_id = (Url: string) => {
     try {
       const url = new URL(Url);
@@ -28,30 +28,37 @@ const Home = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      console.log("submited");
       setSubmited(true);
       Video_id(link);
-      const res = await axios.post("http://localhost:4000/api/start", {
-        name:name,
-        link:link,
-      });
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+      await toast.promise(axios.post("http://localhost:4000/api/start", {
+        name: firstname,
+        link: link,
+      }),{
+        pending: "⏳ Downloading your video...",
+        success: "✅ Video downloaded successfully!",
+        error: "❌ Failed to download video",
+      },
+      {
+        position: "top-right",
+        theme: "dark",
+        transition: Bounce,
+      });    
   };
 
   const handleDownload = async () => {
-    try {
-      const res = await axios.post("http://localhost:4000/api/startDownload", {
-        name:name,
-        link:link,
-      });
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+       await toast.promise(axios.post("http://localhost:4000/api/startDownload", {
+        name: firstname,
+        link: link,
+      }),{
+        pending: "⏳ Downloading your video...",
+        success: "✅ Video downloaded successfully!",
+        error: "❌ Failed to download video",
+      },
+      {
+        position: "top-right",
+        theme: "dark",
+        transition: Bounce,
+      }); 
   };
   return (
     <div className="bg-black text-white h-screen flex flex-col">
@@ -82,13 +89,13 @@ const Home = () => {
         </button>
       </div>
       {submited && Video_Id && (
-        <div className="flex justify-between items-center px-5 *:">
+        <div className="flex gap-10 items-center px-5 pb-2 ">
           <div>
             <iframe
               className="video"
               title="Youtube player"
               height={"500px"}
-              width={"800px"}
+              width={"1300px"}
               sandbox="allow-same-origin allow-forms allow-popups allow-scripts allow-presentation "
               allowFullScreen
               src={`https://www.youtube.com/embed/${Video_Id}`}

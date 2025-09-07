@@ -23,6 +23,7 @@ Schema.methods.Downloader = async function (currentLink) {
     mergeOutputFormat: "mp4",
     ffmpegLocation: ffmpegPath,
     postprocessorArgs: ["-c:v copy -c:a aac"],
+    noPlaylist: true, 
   });
   if (!download) {
     throw new Error("Downloading failed");
