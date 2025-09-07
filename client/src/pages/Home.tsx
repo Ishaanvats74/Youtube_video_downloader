@@ -2,6 +2,8 @@ import { useUser } from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -25,10 +27,31 @@ const Home = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("submited");
-    setSubmited(true);
-    Video_id(link);
+  const handleSubmit = async () => {
+    try {
+      console.log("submited");
+      setSubmited(true);
+      Video_id(link);
+      const res = await axios.post("http://localhost:4000/api/start", {
+        name:name,
+        link:link,
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const res = await axios.post("http://localhost:4000/api/startDownload", {
+        name:name,
+        link:link,
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="bg-black text-white h-screen flex flex-col">
@@ -58,20 +81,26 @@ const Home = () => {
           Submit
         </button>
       </div>
-      {submited && (
-        <div className="flex justify-between items-center flex-1">
+      {submited && Video_Id && (
+        <div className="flex justify-between items-center px-5 *:">
           <div>
             <iframe
               className="video"
               title="Youtube player"
               height={"500px"}
               width={"800px"}
-              sandbox="allow-same-origin allow-forms allow-popups allow-scripts allow-presentation"
+              sandbox="allow-same-origin allow-forms allow-popups allow-scripts allow-presentation "
+              allowFullScreen
               src={`https://www.youtube.com/embed/${Video_Id}`}
             ></iframe>
           </div>
           <div>
-            <button  className="bg-gradient-to-r from-blue-500 to-purple-600 bg-[length:200%_200%] bg-[position:0%_50%] hover:bg-[position:100%_50%] py-3 px-5 rounded-xl font-bold transition-all duration-500 ease-in-out hover:scale-110 cursor-pointer shadow-lg shadow-blue-900/40 hover:shadow-xl ">Download Video </button>
+            <button
+              className="bg-gradient-to-r from-blue-500 to-purple-600 bg-[length:200%_200%] bg-[position:0%_50%] hover:bg-[position:100%_50%] py-3 px-5 rounded-xl font-bold transition-all duration-500 ease-in-out hover:scale-110 cursor-pointer shadow-lg shadow-blue-900/40 hover:shadow-xl "
+              onClick={handleDownload}
+            >
+              Download Video{" "}
+            </button>
           </div>
         </div>
       )}
